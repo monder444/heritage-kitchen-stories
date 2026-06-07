@@ -9,38 +9,155 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ScrapbookRouteImport } from './routes/scrapbook'
+import { Route as DossiersRouteImport } from './routes/dossiers'
+import { Route as DiscoverRouteImport } from './routes/discover'
+import { Route as BookBuilderRouteImport } from './routes/book-builder'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ViewerIdRouteImport } from './routes/viewer.$id'
 
+const ScrapbookRoute = ScrapbookRouteImport.update({
+  id: '/scrapbook',
+  path: '/scrapbook',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DossiersRoute = DossiersRouteImport.update({
+  id: '/dossiers',
+  path: '/dossiers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DiscoverRoute = DiscoverRouteImport.update({
+  id: '/discover',
+  path: '/discover',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BookBuilderRoute = BookBuilderRouteImport.update({
+  id: '/book-builder',
+  path: '/book-builder',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ViewerIdRoute = ViewerIdRouteImport.update({
+  id: '/viewer/$id',
+  path: '/viewer/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/book-builder': typeof BookBuilderRoute
+  '/discover': typeof DiscoverRoute
+  '/dossiers': typeof DossiersRoute
+  '/scrapbook': typeof ScrapbookRoute
+  '/viewer/$id': typeof ViewerIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/book-builder': typeof BookBuilderRoute
+  '/discover': typeof DiscoverRoute
+  '/dossiers': typeof DossiersRoute
+  '/scrapbook': typeof ScrapbookRoute
+  '/viewer/$id': typeof ViewerIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/book-builder': typeof BookBuilderRoute
+  '/discover': typeof DiscoverRoute
+  '/dossiers': typeof DossiersRoute
+  '/scrapbook': typeof ScrapbookRoute
+  '/viewer/$id': typeof ViewerIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/book-builder'
+    | '/discover'
+    | '/dossiers'
+    | '/scrapbook'
+    | '/viewer/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/admin'
+    | '/book-builder'
+    | '/discover'
+    | '/dossiers'
+    | '/scrapbook'
+    | '/viewer/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/book-builder'
+    | '/discover'
+    | '/dossiers'
+    | '/scrapbook'
+    | '/viewer/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRoute
+  BookBuilderRoute: typeof BookBuilderRoute
+  DiscoverRoute: typeof DiscoverRoute
+  DossiersRoute: typeof DossiersRoute
+  ScrapbookRoute: typeof ScrapbookRoute
+  ViewerIdRoute: typeof ViewerIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/scrapbook': {
+      id: '/scrapbook'
+      path: '/scrapbook'
+      fullPath: '/scrapbook'
+      preLoaderRoute: typeof ScrapbookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dossiers': {
+      id: '/dossiers'
+      path: '/dossiers'
+      fullPath: '/dossiers'
+      preLoaderRoute: typeof DossiersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/discover': {
+      id: '/discover'
+      path: '/discover'
+      fullPath: '/discover'
+      preLoaderRoute: typeof DiscoverRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/book-builder': {
+      id: '/book-builder'
+      path: '/book-builder'
+      fullPath: '/book-builder'
+      preLoaderRoute: typeof BookBuilderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,22 +165,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/viewer/$id': {
+      id: '/viewer/$id'
+      path: '/viewer/$id'
+      fullPath: '/viewer/$id'
+      preLoaderRoute: typeof ViewerIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRoute,
+  BookBuilderRoute: BookBuilderRoute,
+  DiscoverRoute: DiscoverRoute,
+  DossiersRoute: DossiersRoute,
+  ScrapbookRoute: ScrapbookRoute,
+  ViewerIdRoute: ViewerIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
