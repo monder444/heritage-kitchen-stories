@@ -85,7 +85,7 @@ function ViewerPage() {
               className="w-full rounded-lg shadow-inner border border-border"
             />
             <div className="mt-6 space-y-3 font-serif italic text-foreground/80 leading-relaxed">
-              {recipe.originalLines[lang].map((line) => (
+              {recipe.originalLines[lang].map((line: string) => (
                 <p key={line}>{line}</p>
               ))}
             </div>
@@ -119,7 +119,7 @@ function ViewerPage() {
                     {t("home.viewer.ingredients")}
                   </h2>
                   <ul className="space-y-2 text-sm">
-                    {recipe.ingredients[lang].map((i, idx) => (
+                    {recipe.ingredients[lang].map((i: string, idx: number) => (
                       <li key={i} className="flex gap-3">
                         <span className="font-mono text-burnt text-xs pt-0.5">0{idx + 1}</span>
                         <span>{i}</span>
@@ -132,7 +132,7 @@ function ViewerPage() {
                     {t("home.viewer.method")}
                   </h2>
                   <ol className="space-y-3 text-sm leading-relaxed">
-                    {recipe.method[lang].map((m, idx) => (
+                    {recipe.method[lang].map((m: string, idx: number) => (
                       <li key={m} className="flex gap-3">
                         <span className="font-serif italic text-burgundy text-lg leading-none">{idx + 1}.</span>
                         <span>{m}</span>
