@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { LangProvider } from "@/lib/i18n";
 import { ScrapbookProvider } from "@/lib/scrapbook";
+import { RecipeProvider } from "@/lib/recipe-store";
 
 function NotFoundComponent() {
   return (
@@ -117,8 +118,10 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <LangProvider>
         <ScrapbookProvider>
-          {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-          <Outlet />
+          <RecipeProvider>
+            {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+            <Outlet />
+          </RecipeProvider>
         </ScrapbookProvider>
       </LangProvider>
     </QueryClientProvider>

@@ -1,6 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteShell } from "@/components/site/SiteShell";
-import { recipes } from "@/lib/recipes";
+import { useRecipes } from "@/lib/recipe-store";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({ meta: [{ title: "Admin — Chuť Archívu" }] }),
@@ -28,6 +28,7 @@ const orders = [
 ];
 
 function AdminPage() {
+  const { all: recipes, userRecipes, remove } = useRecipes();
   return (
     <SiteShell>
       <section className="max-w-7xl mx-auto px-6 py-16">
@@ -36,9 +37,12 @@ function AdminPage() {
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-burnt mb-3">Admin</p>
             <h1 className="font-serif text-5xl leading-tight">Prehľad archívu</h1>
           </div>
-          <button className="px-5 py-2.5 bg-burgundy text-cream rounded-full text-sm font-medium hover:bg-ink">
-            + Nové nahrávanie
-          </button>
+          <Link
+            to="/admin/create"
+            className="px-5 py-2.5 bg-burgundy text-cream rounded-full text-sm font-medium hover:bg-ink"
+          >
+            + Nový recept
+          </Link>
         </div>
 
         {/* Stats */}
@@ -116,20 +120,43 @@ function AdminPage() {
           </div>
 
           <div className="bg-card border border-border rounded-3xl p-8">
-            <h2 className="font-serif text-2xl mb-6">Najnovšie recepty</h2>
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="font-serif text-2xl">Najnovšie recepty</h2>
+              {userRecipes.length > 0 && (
+                <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-burnt">
+                  {userRecipes.length} vlastných
+                </span>
+              )}
+            </div>
             <ul className="space-y-4">
-              {recipes.map((r) => (
-                <li key={r.id} className="flex items-center gap-4">
-                  <img src={r.image} alt="" loading="lazy" className="size-14 object-cover rounded-lg" />
-                  <div className="flex-1 min-w-0">
-                    <p className="font-serif text-base truncate">{r.title.sk}</p>
-                    <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground">{r.era} · {r.region.sk}</p>
-                  </div>
-                  <span className={`text-[10px] font-bold uppercase tracking-[0.15em] px-2 py-1 rounded-full ${r.premium ? "bg-burgundy text-cream" : "bg-burnt/10 text-burnt"}`}>
-                    {r.premium ? "Premium" : "Voľne"}
-                  </span>
-                </li>
-              ))}
+              {recipes.slice(0, 8).map((r) => {
+                const isUser = userRecipes.some((x) => x.id === r.id);
+                return (
+                  <li key={r.id} className="flex items-center gap-4">
+                    <img src={r.image} alt="" loading="lazy" className="size-14 object-cover rounded-lg" />
+                    <div className="flex-1 min-w-0">
+                      <Link to="/viewer/$id" params={{ id: r.id }} className="font-serif text-base truncate block hover:text-burnt">
+                        {r.title.sk}
+                      </Link>
+                      <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
+                        {r.era} · {r.region.sk} {isUser && <span className="text-burnt">· vlastné</span>}
+                      </p>
+                    </div>
+                    <span className={`text-[10px] font-bold uppercase tracking-[0.15em] px-2 py-1 rounded-full ${r.premium ? "bg-burgundy text-cream" : "bg-burnt/10 text-burnt"}`}>
+                      {r.premium ? "Premium" : "Voľne"}
+                    </span>
+                    {isUser && (
+                      <button
+                        onClick={() => remove(r.id)}
+                        className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground hover:text-burgundy"
+                        title="Odstrániť"
+                      >
+                        ×
+                      </button>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
           </div>
         </div>

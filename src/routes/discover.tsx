@@ -3,7 +3,8 @@ import { useMemo, useState } from "react";
 import { SiteShell } from "@/components/site/SiteShell";
 import { RecipeCard } from "@/components/site/RecipeCard";
 import { useLang } from "@/lib/i18n";
-import { recipes, magicPrompts } from "@/lib/recipes";
+import { magicPrompts } from "@/lib/recipes";
+import { useRecipes } from "@/lib/recipe-store";
 
 export const Route = createFileRoute("/discover")({
   head: () => ({
@@ -19,6 +20,7 @@ const eras = ["1842", "1870", "1914", "1924"];
 
 function Discover() {
   const { lang } = useLang();
+  const { all: recipes } = useRecipes();
   const [q, setQ] = useState("");
   const [era, setEra] = useState<string | null>(null);
   const [onlyFree, setOnlyFree] = useState(false);
@@ -34,7 +36,7 @@ function Discover() {
       }
       return true;
     });
-  }, [q, era, onlyFree, lang]);
+  }, [q, era, onlyFree, lang, recipes]);
 
   return (
     <SiteShell>
