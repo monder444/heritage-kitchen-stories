@@ -122,6 +122,7 @@ function RootComponent() {
           <RecipeProvider>
             {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
             <Outlet />
+            <Toaster position="bottom-right" theme="light" />
           </RecipeProvider>
         </ScrapbookProvider>
       </LangProvider>
