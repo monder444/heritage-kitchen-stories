@@ -1,6 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteShell } from "@/components/site/SiteShell";
-import { recipes } from "@/lib/recipes";
+import { useRecipes } from "@/lib/recipe-store";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({ meta: [{ title: "Admin — Chuť Archívu" }] }),
@@ -28,6 +28,7 @@ const orders = [
 ];
 
 function AdminPage() {
+  const { all: recipes, userRecipes, remove } = useRecipes();
   return (
     <SiteShell>
       <section className="max-w-7xl mx-auto px-6 py-16">
@@ -36,9 +37,12 @@ function AdminPage() {
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-burnt mb-3">Admin</p>
             <h1 className="font-serif text-5xl leading-tight">Prehľad archívu</h1>
           </div>
-          <button className="px-5 py-2.5 bg-burgundy text-cream rounded-full text-sm font-medium hover:bg-ink">
-            + Nové nahrávanie
-          </button>
+          <Link
+            to="/admin/create"
+            className="px-5 py-2.5 bg-burgundy text-cream rounded-full text-sm font-medium hover:bg-ink"
+          >
+            + Nový recept
+          </Link>
         </div>
 
         {/* Stats */}
