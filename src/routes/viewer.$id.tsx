@@ -1,39 +1,34 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { SiteShell } from "@/components/site/SiteShell";
 import { useLang } from "@/lib/i18n";
 import { useScrapbook } from "@/lib/scrapbook";
-import { recipes } from "@/lib/recipes";
+import { useRecipes } from "@/lib/recipe-store";
 
 export const Route = createFileRoute("/viewer/$id")({
-  loader: ({ params }) => {
-    const recipe = recipes.find((r) => r.id === params.id);
-    if (!recipe) throw notFound();
-    return { recipe };
-  },
-  head: ({ loaderData }) => ({
-    meta: [
-      { title: `${loaderData?.recipe.title.sk ?? "Recept"} — Chuť Archívu` },
-      { name: "description", content: loaderData?.recipe.intro.sk ?? "" },
-      { property: "og:image", content: loaderData?.recipe.image ?? "" },
-    ],
-  }),
+  head: () => ({ meta: [{ title: "Recept — Chuť Archívu" }] }),
   component: ViewerPage,
-  notFoundComponent: () => (
-    <SiteShell>
-      <div className="max-w-2xl mx-auto py-32 text-center px-6">
-        <h1 className="font-serif text-5xl text-burgundy mb-4">Recept sa nenašiel</h1>
-        <Link to="/discover" className="text-burnt underline">Späť do archívu</Link>
-      </div>
-    </SiteShell>
-  ),
 });
 
 function ViewerPage() {
-  const { recipe } = Route.useLoaderData();
+  const { id } = Route.useParams();
+  const { get } = useRecipes();
+  const recipe = get(id);
   const { lang, t } = useLang();
   const { has, toggle } = useScrapbook();
-  const [unlocked, setUnlocked] = useState(!recipe.premium);
+  const [unlocked, setUnlocked] = useState(!recipe?.premium);
+
+  if (!recipe) {
+    return (
+      <SiteShell>
+        <div className="max-w-2xl mx-auto py-32 text-center px-6">
+          <h1 className="font-serif text-5xl text-burgundy mb-4">Recept sa nenašiel</h1>
+          <Link to="/discover" className="text-burnt underline">Späť do archívu</Link>
+        </div>
+      </SiteShell>
+    );
+  }
+
   const saved = has(recipe.id);
 
   return (
