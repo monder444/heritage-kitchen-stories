@@ -92,14 +92,29 @@ function ViewerPage() {
             <span className={`text-[10px] font-bold uppercase tracking-[0.18em] px-3 py-1.5 rounded-full ${recipe.premium ? "bg-burgundy text-cream" : "bg-burnt/10 text-burnt"}`}>
               {recipe.premium ? t("common.premium") : t("common.free")}
             </span>
-            <button
-              onClick={() => toggle(recipe.id)}
-              className={`px-5 py-2.5 rounded-full text-sm font-medium border transition-colors ${
-                saved ? "bg-burgundy text-cream border-burgundy" : "border-border hover:border-burnt"
-              }`}
-            >
-              {saved ? `✓ ${t("common.saved")}` : `+ ${t("common.save")}`}
-            </button>
+            <div className="flex flex-wrap gap-2 justify-end">
+              <button
+                onClick={onSave}
+                className={`px-4 py-2 rounded-full text-sm font-medium border transition-colors ${
+                  saved ? "bg-burgundy text-cream border-burgundy" : "border-border hover:border-burnt"
+                }`}
+              >
+                {saved ? `✓ ${t("common.saved")}` : `+ ${t("common.save")}`}
+              </button>
+              <button
+                onClick={onShare}
+                className="px-4 py-2 rounded-full text-sm font-medium border border-border hover:border-burnt"
+                aria-label="Zdieľať"
+              >
+                {lang === "sk" ? "Zdieľať" : "Share"}
+              </button>
+              <button
+                onClick={onPrint}
+                className="px-4 py-2 rounded-full text-sm font-medium border border-border hover:border-burnt print:hidden"
+              >
+                {lang === "sk" ? "Tlačiť" : "Print"}
+              </button>
+            </div>
           </div>
         </header>
 
