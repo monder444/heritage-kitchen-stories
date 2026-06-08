@@ -24,12 +24,13 @@ const formats: { id: Format; label: string; price: number; note: string }[] = [
 function BookBuilderPage() {
   const { lang } = useLang();
   const { saved } = useScrapbook();
+  const { all } = useRecipes();
   const [title, setTitle] = useState("Moja rodinná kuchárka");
   const [author, setAuthor] = useState("Helena Mrázová");
   const [format, setFormat] = useState<Format>("softcover");
 
-  const items = recipes.filter((r) => saved.includes(r.id));
-  const list = items.length > 0 ? items : recipes;
+  const items = all.filter((r) => saved.includes(r.id));
+  const list = items.length > 0 ? items : all;
   const selectedFmt = formats.find((f) => f.id === format)!;
 
   return (
