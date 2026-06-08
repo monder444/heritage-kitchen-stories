@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
+import { toast } from "sonner";
 import { SiteShell } from "@/components/site/SiteShell";
 import { useLang } from "@/lib/i18n";
 import { useScrapbook } from "@/lib/scrapbook";
@@ -17,6 +18,45 @@ function ViewerPage() {
   const { lang, t } = useLang();
   const { has, toggle } = useScrapbook();
   const [unlocked, setUnlocked] = useState(!recipe?.premium);
+  const [dark, setDark] = useState(true);
+  const [modernizing, setModernizing] = useState(false);
+  const [version, setVersion] = useState(2);
+
+  const onSave = () => {
+    if (!recipe) return;
+    toggle(recipe.id);
+    toast.success(
+      has(recipe.id)
+        ? lang === "sk" ? "Odstránené zo zápisníka" : "Removed from scrapbook"
+        : lang === "sk" ? "Uložené do zápisníka" : "Saved to scrapbook"
+    );
+  };
+
+  const onModernize = () => {
+    setModernizing(true);
+    setTimeout(() => {
+      setModernizing(false);
+      setVersion((v) => v + 1);
+      toast.success(lang === "sk" ? "Recept znova premodernizovaný" : "Recipe re-modernised");
+    }, 900);
+  };
+
+  const onPrint = () => {
+    if (typeof window !== "undefined") window.print();
+  };
+
+  const onShare = async () => {
+    if (!recipe) return;
+    const url = typeof window !== "undefined" ? window.location.href : "";
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: recipe.title[lang], url });
+      } else {
+        await navigator.clipboard.writeText(url);
+        toast.success(lang === "sk" ? "Odkaz skopírovaný" : "Link copied");
+      }
+    } catch { /* user cancelled */ }
+  };
 
   if (!recipe) {
     return (
