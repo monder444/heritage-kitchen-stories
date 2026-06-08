@@ -36,7 +36,7 @@ function Discover() {
       }
       return true;
     });
-  }, [q, era, onlyFree, lang]);
+  }, [q, era, onlyFree, lang, recipes]);
 
   return (
     <SiteShell>
