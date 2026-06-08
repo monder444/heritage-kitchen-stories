@@ -3,7 +3,7 @@ import { useState } from "react";
 import { SiteShell } from "@/components/site/SiteShell";
 import { useLang } from "@/lib/i18n";
 import { useScrapbook } from "@/lib/scrapbook";
-import { recipes } from "@/lib/recipes";
+import { useRecipes } from "@/lib/recipe-store";
 import bookImg from "@/assets/book-builder.jpg";
 
 export const Route = createFileRoute("/book-builder")({
