@@ -15,7 +15,8 @@ export const Route = createFileRoute("/scrapbook")({
 function ScrapbookPage() {
   const { lang } = useLang();
   const { saved, clear } = useScrapbook();
-  const items = recipes.filter((r) => saved.includes(r.id));
+  const { all } = useRecipes();
+  const items = all.filter((r) => saved.includes(r.id));
 
   return (
     <SiteShell>
