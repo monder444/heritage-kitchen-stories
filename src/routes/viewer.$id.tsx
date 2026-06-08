@@ -145,27 +145,37 @@ function ViewerPage() {
           </div>
 
           {/* AI modernised */}
-          <div className="bg-card p-8 md:p-10 relative">
-            <div className="flex justify-between items-center mb-6">
-              <span className="px-3 py-1 bg-burgundy/10 rounded text-[10px] font-bold text-burgundy uppercase tracking-[0.18em]">
-                {t("home.viewer.ai")} · RAG v2
+          <div className={`relative p-8 md:p-10 transition-colors ${dark ? "bg-ink text-cream" : "bg-card"}`}>
+            <div className="flex justify-between items-center mb-6 gap-2 flex-wrap">
+              <span className={`px-3 py-1 rounded text-[10px] font-bold uppercase tracking-[0.18em] ${dark ? "bg-cream/10 text-cream" : "bg-burgundy/10 text-burgundy"}`}>
+                {t("home.viewer.ai")} · RAG v{version}
               </span>
-              <span className="px-2 py-1 border border-burnt/40 text-burnt text-[10px] rounded-full font-bold">
-                98% autenticita
-              </span>
+              <div className="flex items-center gap-2">
+                <span className={`px-2 py-1 border text-[10px] rounded-full font-bold ${dark ? "border-cream/30 text-cream/90" : "border-burnt/40 text-burnt"}`}>
+                  98% autenticita
+                </span>
+                <button
+                  onClick={() => setDark((d) => !d)}
+                  aria-label="Tmavý režim"
+                  className={`size-7 grid place-items-center rounded-full border transition-colors ${dark ? "border-cream/30 hover:bg-cream/10" : "border-border hover:border-burnt"}`}
+                  title={dark ? "Svetlý režim" : "Tmavý režim"}
+                >
+                  <span className="text-xs">{dark ? "☀" : "☾"}</span>
+                </button>
+              </div>
             </div>
 
             <img
               src={recipe.image}
               alt={recipe.title[lang]}
               loading="lazy"
-              className="w-full aspect-[16/10] object-cover rounded-xl mb-6"
+              className={`w-full aspect-[16/10] object-cover rounded-xl mb-6 transition-opacity ${modernizing ? "opacity-40 animate-pulse" : ""}`}
             />
 
             {unlocked ? (
               <>
                 <section className="mb-6">
-                  <h2 className="text-[10px] font-bold uppercase tracking-[0.18em] text-burnt mb-3">
+                  <h2 className={`text-[10px] font-bold uppercase tracking-[0.18em] mb-3 ${dark ? "text-burnt" : "text-burnt"}`}>
                     {t("home.viewer.ingredients")}
                   </h2>
                   <ul className="space-y-2 text-sm">
@@ -177,19 +187,32 @@ function ViewerPage() {
                     ))}
                   </ul>
                 </section>
-                <section>
+                <section className="mb-6">
                   <h2 className="text-[10px] font-bold uppercase tracking-[0.18em] text-burnt mb-3">
                     {t("home.viewer.method")}
                   </h2>
                   <ol className="space-y-3 text-sm leading-relaxed">
                     {recipe.method[lang].map((m: string, idx: number) => (
                       <li key={m} className="flex gap-3">
-                        <span className="font-serif italic text-burgundy text-lg leading-none">{idx + 1}.</span>
+                        <span className={`font-serif italic text-lg leading-none ${dark ? "text-burnt" : "text-burgundy"}`}>{idx + 1}.</span>
                         <span>{m}</span>
                       </li>
                     ))}
                   </ol>
                 </section>
+                <button
+                  onClick={onModernize}
+                  disabled={modernizing}
+                  className={`mt-2 w-full py-3 rounded-full text-sm font-semibold border transition-colors disabled:opacity-60 print:hidden ${
+                    dark
+                      ? "border-cream/30 text-cream hover:bg-cream/10"
+                      : "border-burgundy text-burgundy hover:bg-burgundy hover:text-cream"
+                  }`}
+                >
+                  {modernizing
+                    ? (lang === "sk" ? "Modernizujem…" : "Modernising…")
+                    : (lang === "sk" ? "↻ Premodernizovať recept" : "↻ Re-modernise recipe")}
+                </button>
               </>
             ) : (
               <div className="rounded-2xl border-2 border-dashed border-burgundy/30 bg-parchment p-8 text-center">
