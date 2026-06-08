@@ -3,7 +3,7 @@ import { SiteShell } from "@/components/site/SiteShell";
 import { RecipeCard } from "@/components/site/RecipeCard";
 import { useLang } from "@/lib/i18n";
 import { useScrapbook } from "@/lib/scrapbook";
-import { recipes } from "@/lib/recipes";
+import { useRecipes } from "@/lib/recipe-store";
 
 export const Route = createFileRoute("/scrapbook")({
   head: () => ({
