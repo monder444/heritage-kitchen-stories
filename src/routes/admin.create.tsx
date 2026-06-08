@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { SiteShell } from "@/components/site/SiteShell";
+import { toast } from "sonner";
 import { useRecipes, generateFromUrl, generateFromImage, buildRecipe } from "@/lib/recipe-store";
 
 export const Route = createFileRoute("/admin/create")({
@@ -17,6 +18,7 @@ function AdminCreate() {
 
   const onCreate = (recipe: ReturnType<typeof buildRecipe>) => {
     add(recipe);
+    toast.success(`Recept „${recipe.title.sk}" pridaný do archívu`);
     navigate({ to: "/viewer/$id", params: { id: recipe.id } });
   };
 

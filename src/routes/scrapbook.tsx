@@ -3,7 +3,7 @@ import { SiteShell } from "@/components/site/SiteShell";
 import { RecipeCard } from "@/components/site/RecipeCard";
 import { useLang } from "@/lib/i18n";
 import { useScrapbook } from "@/lib/scrapbook";
-import { recipes } from "@/lib/recipes";
+import { useRecipes } from "@/lib/recipe-store";
 
 export const Route = createFileRoute("/scrapbook")({
   head: () => ({
@@ -15,7 +15,8 @@ export const Route = createFileRoute("/scrapbook")({
 function ScrapbookPage() {
   const { lang } = useLang();
   const { saved, clear } = useScrapbook();
-  const items = recipes.filter((r) => saved.includes(r.id));
+  const { all } = useRecipes();
+  const items = all.filter((r) => saved.includes(r.id));
 
   return (
     <SiteShell>

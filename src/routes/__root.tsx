@@ -14,6 +14,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { LangProvider } from "@/lib/i18n";
 import { ScrapbookProvider } from "@/lib/scrapbook";
 import { RecipeProvider } from "@/lib/recipe-store";
+import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
   return (
@@ -121,6 +122,7 @@ function RootComponent() {
           <RecipeProvider>
             {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
             <Outlet />
+            <Toaster position="bottom-right" theme="light" />
           </RecipeProvider>
         </ScrapbookProvider>
       </LangProvider>
