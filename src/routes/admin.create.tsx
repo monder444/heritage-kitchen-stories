@@ -18,6 +18,7 @@ function AdminCreate() {
 
   const onCreate = (recipe: ReturnType<typeof buildRecipe>) => {
     add(recipe);
+    toast.success(`Recept „${recipe.title.sk}" pridaný do archívu`);
     navigate({ to: "/viewer/$id", params: { id: recipe.id } });
   };
 
