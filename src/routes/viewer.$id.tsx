@@ -1,10 +1,14 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useServerFn } from "@tanstack/react-start";
+import { useQueryClient } from "@tanstack/react-query";
 import { SiteShell } from "@/components/site/SiteShell";
 import { useLang } from "@/lib/i18n";
 import { useScrapbook } from "@/lib/scrapbook";
 import { useRecipes } from "@/lib/recipe-store";
+import { useAuth } from "@/lib/use-auth";
+import { grantPremiumStubFn } from "@/lib/auth.functions";
 
 export const Route = createFileRoute("/viewer/$id")({
   head: () => ({ meta: [{ title: "Recept — Chuť Archívu" }] }),
@@ -17,7 +21,12 @@ function ViewerPage() {
   const recipe = get(id);
   const { lang, t } = useLang();
   const { has, toggle } = useScrapbook();
-  const [unlocked, setUnlocked] = useState(!recipe?.premium);
+  const { user, isAdmin, isPremium } = useAuth();
+  const navigate = useNavigate();
+  const qc = useQueryClient();
+  const grantPremium = useServerFn(grantPremiumStubFn);
+  const entitled = !recipe?.premium || isAdmin || isPremium;
+  const [unlocking, setUnlocking] = useState(false);
   const [dark, setDark] = useState(true);
   const [modernizing, setModernizing] = useState(false);
   const [version, setVersion] = useState(2);
