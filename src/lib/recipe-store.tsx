@@ -1,39 +1,91 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useMemo, type ReactNode } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
 import { recipes as seedRecipes, type Recipe } from "./recipes";
-
-const KEY = "ca.recipes";
+import { adminCreateRecipeFn, adminDeleteRecipeFn, listRecipesFn } from "./recipes.functions";
 
 type Ctx = {
   all: Recipe[];
   userRecipes: Recipe[];
   get: (id: string) => Recipe | undefined;
-  add: (r: Recipe) => void;
-  remove: (id: string) => void;
+  add: (r: Recipe) => Promise<string | null>;
+  remove: (id: string) => Promise<void>;
+  isLoading: boolean;
 };
 
 const RecipeCtx = createContext<Ctx | null>(null);
 
 export function RecipeProvider({ children }: { children: ReactNode }) {
-  const [userRecipes, setUserRecipes] = useState<Recipe[]>([]);
+  const qc = useQueryClient();
+  const listRecipes = useServerFn(listRecipesFn);
+  const adminCreate = useServerFn(adminCreateRecipeFn);
+  const adminDelete = useServerFn(adminDeleteRecipeFn);
 
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(KEY);
-      if (raw) setUserRecipes(JSON.parse(raw));
-    } catch { /* noop */ }
-  }, []);
+  const q = useQuery({
+    queryKey: ["recipes", "all"],
+    queryFn: () => listRecipes(),
+    staleTime: 30_000,
+  });
 
-  useEffect(() => {
-    try { localStorage.setItem(KEY, JSON.stringify(userRecipes)); } catch { /* noop */ }
-  }, [userRecipes]);
-
+  const userRecipes = q.data ?? [];
   const all = useMemo(() => [...userRecipes, ...seedRecipes], [userRecipes]);
   const get = useCallback((id: string) => all.find((r) => r.id === id), [all]);
-  const add = useCallback((r: Recipe) => setUserRecipes((cur) => [r, ...cur.filter((x) => x.id !== r.id)]), []);
-  const remove = useCallback((id: string) => setUserRecipes((cur) => cur.filter((r) => r.id !== id)), []);
+
+  const createMut = useMutation({
+    mutationFn: (r: Recipe) =>
+      adminCreate({
+        data: {
+          slug: r.id,
+          title: r.title,
+          image: r.image,
+          scan: r.scan,
+          era: r.era,
+          source: r.source,
+          region: r.region,
+          tag: r.tag,
+          premium: r.premium,
+          intro: r.intro,
+          originalLines: r.originalLines,
+          ingredients: r.ingredients,
+          method: r.method,
+        },
+      }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["recipes"] }),
+  });
+
+  const deleteMut = useMutation({
+    mutationFn: (id: string) => adminDelete({ data: { id } }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["recipes"] }),
+  });
+
+  const add = useCallback(async (r: Recipe): Promise<string | null> => {
+    try {
+      const { id } = await createMut.mutateAsync(r);
+      return id;
+    } catch (e: any) {
+      toast.error(e?.message || "Recept sa nepodarilo uložiť");
+      return null;
+    }
+  }, [createMut]);
+
+  const remove = useCallback(async (id: string) => {
+    // Seed ids aren't UUIDs — skip server delete for static seed.
+    const looksUuid = /^[0-9a-f-]{36}$/i.test(id);
+    if (!looksUuid) {
+      toast.message("Tento recept je v základnom obsahu portálu a nie je možné ho odstrániť.");
+      return;
+    }
+    try {
+      await deleteMut.mutateAsync(id);
+      toast.success("Recept zmazaný");
+    } catch (e: any) {
+      toast.error(e?.message || "Nepodarilo sa zmazať");
+    }
+  }, [deleteMut]);
 
   return (
-    <RecipeCtx.Provider value={{ all, userRecipes, get, add, remove }}>
+    <RecipeCtx.Provider value={{ all, userRecipes, get, add, remove, isLoading: q.isLoading }}>
       {children}
     </RecipeCtx.Provider>
   );
@@ -45,8 +97,7 @@ export function useRecipes() {
   return ctx;
 }
 
-// Mock generators that simulate URL scraping / OCR / AI formatting.
-// All produce a Recipe matching the portal's schema and tone.
+/* ---------- mock generators (unchanged client-side helpers) ---------- */
 
 const FALLBACK_IMG = "https://images.unsplash.com/photo-1547573854-74d2a71d0826?w=1200&q=80";
 const FALLBACK_SCAN = "https://images.unsplash.com/photo-1519682337058-a94d519337bc?w=1200&q=80";
@@ -80,7 +131,6 @@ function toLines(text?: string): string[] {
   return text.split(/\r?\n|•|·|;/).map((s) => s.trim()).filter(Boolean);
 }
 
-/** Wrap monolingual content into the bilingual Recipe shape (sk authored, en mirror). */
 export function buildRecipe(input: GenInput): Recipe {
   const title = input.title.trim() || "Nový recept z archívu";
   const ingredients = toLines(input.ingredientsText);
@@ -118,7 +168,6 @@ export function buildRecipe(input: GenInput): Recipe {
   };
 }
 
-/** Mock "scrape + AI format" from a URL. */
 export function generateFromUrl(url: string, premium: boolean): Recipe {
   let host = "zdroj.sk";
   let pathTitle = "Recept z webu";
@@ -143,7 +192,6 @@ export function generateFromUrl(url: string, premium: boolean): Recipe {
   });
 }
 
-/** Mock "OCR + AI format" from an uploaded image (data URL). */
 export function generateFromImage(opts: {
   imageDataUrl: string;
   title: string;

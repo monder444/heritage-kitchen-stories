@@ -14,6 +14,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { LangProvider } from "@/lib/i18n";
 import { ScrapbookProvider } from "@/lib/scrapbook";
 import { RecipeProvider } from "@/lib/recipe-store";
+import { AuthProvider } from "@/lib/use-auth";
 import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
@@ -117,15 +118,17 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   return (
     <QueryClientProvider client={queryClient}>
-      <LangProvider>
-        <ScrapbookProvider>
+      <AuthProvider>
+        <LangProvider>
           <RecipeProvider>
-            {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-            <Outlet />
-            <Toaster position="bottom-right" theme="light" />
+            <ScrapbookProvider>
+              {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+              <Outlet />
+              <Toaster position="bottom-right" theme="light" />
+            </ScrapbookProvider>
           </RecipeProvider>
-        </ScrapbookProvider>
-      </LangProvider>
+        </LangProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }

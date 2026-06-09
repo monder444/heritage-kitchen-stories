@@ -1,10 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteShell } from "@/components/site/SiteShell";
+import { AdminGuard } from "@/components/site/AdminGuard";
 import { useRecipes } from "@/lib/recipe-store";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({ meta: [{ title: "Admin — Chuť Archívu" }] }),
-  component: AdminPage,
+  component: () => (
+    <AdminGuard>
+      <AdminPage />
+    </AdminGuard>
+  ),
 });
 
 const stats = [

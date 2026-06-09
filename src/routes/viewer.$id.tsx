@@ -1,10 +1,14 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useServerFn } from "@tanstack/react-start";
+import { useQueryClient } from "@tanstack/react-query";
 import { SiteShell } from "@/components/site/SiteShell";
 import { useLang } from "@/lib/i18n";
 import { useScrapbook } from "@/lib/scrapbook";
 import { useRecipes } from "@/lib/recipe-store";
+import { useAuth } from "@/lib/use-auth";
+import { grantPremiumStubFn } from "@/lib/auth.functions";
 
 export const Route = createFileRoute("/viewer/$id")({
   head: () => ({ meta: [{ title: "Recept — Chuť Archívu" }] }),
@@ -17,7 +21,12 @@ function ViewerPage() {
   const recipe = get(id);
   const { lang, t } = useLang();
   const { has, toggle } = useScrapbook();
-  const [unlocked, setUnlocked] = useState(!recipe?.premium);
+  const { user, isAdmin, isPremium } = useAuth();
+  const navigate = useNavigate();
+  const qc = useQueryClient();
+  const grantPremium = useServerFn(grantPremiumStubFn);
+  const entitled = !recipe?.premium || isAdmin || isPremium;
+  const [unlocking, setUnlocking] = useState(false);
   const [dark, setDark] = useState(true);
   const [modernizing, setModernizing] = useState(false);
   const [version, setVersion] = useState(2);
@@ -172,7 +181,7 @@ function ViewerPage() {
               className={`w-full aspect-[16/10] object-cover rounded-xl mb-6 transition-opacity ${modernizing ? "opacity-40 animate-pulse" : ""}`}
             />
 
-            {unlocked ? (
+            {entitled ? (
               <>
                 <section className="mb-6">
                   <h2 className={`text-[10px] font-bold uppercase tracking-[0.18em] mb-3 ${dark ? "text-burnt" : "text-burnt"}`}>
@@ -218,16 +227,31 @@ function ViewerPage() {
               <div className="rounded-2xl border-2 border-dashed border-burgundy/30 bg-parchment p-8 text-center">
                 <p className="font-serif text-2xl text-burgundy mb-3 italic">Tento recept je prémiový</p>
                 <p className="text-sm text-muted-foreground mb-6 max-w-sm mx-auto">
-                  Pre prístup k modernizácii a postupu sa prihláste alebo si aktivujte mesačné členstvo.
+                  {user
+                    ? "Pre prístup k modernizácii a postupu si aktivujte mesačné členstvo."
+                    : "Pre prístup k modernizácii a postupu sa prihláste alebo si aktivujte mesačné členstvo."}
                 </p>
                 <button
-                  onClick={() => setUnlocked(true)}
-                  className="px-6 py-3 bg-burgundy text-cream rounded-full font-medium hover:bg-ink transition-colors"
+                  onClick={async () => {
+                    if (!user) { navigate({ to: "/auth" }); return; }
+                    setUnlocking(true);
+                    try {
+                      await grantPremium();
+                      await qc.invalidateQueries({ queryKey: ["auth"] });
+                      toast.success("Premium aktivované — vitajte v dossier klube");
+                    } catch (e: any) {
+                      toast.error(e?.message || "Aktivácia zlyhala");
+                    } finally {
+                      setUnlocking(false);
+                    }
+                  }}
+                  disabled={unlocking}
+                  className="px-6 py-3 bg-burgundy text-cream rounded-full font-medium hover:bg-ink transition-colors disabled:opacity-60"
                 >
-                  Odomknúť — 4,90 € / mesiac
+                  {unlocking ? "Aktivujem…" : user ? "Odomknúť — 4,90 € / mesiac (demo)" : "Prihlásiť sa a odomknúť"}
                 </button>
                 <p className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground mt-4">
-                  Zrušiť môžete kedykoľvek
+                  Demo: platba sa zatiaľ neprijíma · zrušiť môžete kedykoľvek
                 </p>
               </div>
             )}

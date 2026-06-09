@@ -1,12 +1,17 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { SiteShell } from "@/components/site/SiteShell";
+import { AdminGuard } from "@/components/site/AdminGuard";
 import { toast } from "sonner";
 import { useRecipes, generateFromUrl, generateFromImage, buildRecipe } from "@/lib/recipe-store";
 
 export const Route = createFileRoute("/admin/create")({
   head: () => ({ meta: [{ title: "Vytvoriť recept — Admin · Chuť Archívu" }] }),
-  component: AdminCreate,
+  component: () => (
+    <AdminGuard>
+      <AdminCreate />
+    </AdminGuard>
+  ),
 });
 
 type Tab = "url" | "image" | "manual";
@@ -16,10 +21,11 @@ function AdminCreate() {
   const { add } = useRecipes();
   const navigate = useNavigate();
 
-  const onCreate = (recipe: ReturnType<typeof buildRecipe>) => {
-    add(recipe);
+  const onCreate = async (recipe: ReturnType<typeof buildRecipe>) => {
+    const id = await add(recipe);
+    if (!id) return; // toast handled in store
     toast.success(`Recept „${recipe.title.sk}" pridaný do archívu`);
-    navigate({ to: "/viewer/$id", params: { id: recipe.id } });
+    navigate({ to: "/viewer/$id", params: { id } });
   };
 
   return (

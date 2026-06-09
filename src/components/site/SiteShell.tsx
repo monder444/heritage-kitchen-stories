@@ -1,11 +1,15 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { type ReactNode } from "react";
+import { toast } from "sonner";
 import { useLang } from "@/lib/i18n";
 import { useScrapbook } from "@/lib/scrapbook";
+import { useAuth } from "@/lib/use-auth";
 
 export function SiteShell({ children }: { children: ReactNode }) {
   const { lang, setLang, t } = useLang();
   const { saved } = useScrapbook();
+  const { user, isAdmin, isPremium, signOut } = useAuth();
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-background text-foreground font-sans selection:bg-accent/20">
@@ -28,6 +32,11 @@ export function SiteShell({ children }: { children: ReactNode }) {
               <Link to="/book-builder" className="hover:text-burnt transition-colors" activeProps={{ className: "text-burnt" }}>
                 {t("nav.builder")}
               </Link>
+              {isAdmin && (
+                <Link to="/admin" className="hover:text-burnt transition-colors" activeProps={{ className: "text-burnt" }}>
+                  {t("nav.admin")}
+                </Link>
+              )}
             </div>
           </div>
           <div className="flex items-center gap-4">
@@ -45,9 +54,27 @@ export function SiteShell({ children }: { children: ReactNode }) {
                 EN
               </button>
             </div>
-            <button className="hidden sm:inline-flex px-5 py-2 bg-burgundy text-cream rounded-full text-sm font-medium hover:bg-ink transition-all">
-              {t("nav.signin")}
-            </button>
+            {user ? (
+              <div className="hidden sm:flex items-center gap-3">
+                {isPremium && !isAdmin && (
+                  <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-burnt bg-burnt/10 px-2 py-1 rounded-full">Premium</span>
+                )}
+                {isAdmin && (
+                  <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-burgundy bg-burgundy/10 px-2 py-1 rounded-full">Admin</span>
+                )}
+                <span className="text-xs text-muted-foreground max-w-[140px] truncate">{user.email}</span>
+                <button
+                  onClick={async () => { await signOut(); toast.success("Odhlásené"); navigate({ to: "/" }); }}
+                  className="px-4 py-2 border border-border rounded-full text-xs font-semibold hover:bg-muted"
+                >
+                  Odhlásiť
+                </button>
+              </div>
+            ) : (
+              <Link to="/auth" className="hidden sm:inline-flex px-5 py-2 bg-burgundy text-cream rounded-full text-sm font-medium hover:bg-ink transition-all">
+                {t("nav.signin")}
+              </Link>
+            )}
           </div>
         </div>
       </nav>
