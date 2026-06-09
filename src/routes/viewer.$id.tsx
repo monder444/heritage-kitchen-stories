@@ -181,7 +181,7 @@ function ViewerPage() {
               className={`w-full aspect-[16/10] object-cover rounded-xl mb-6 transition-opacity ${modernizing ? "opacity-40 animate-pulse" : ""}`}
             />
 
-            {unlocked ? (
+            {entitled ? (
               <>
                 <section className="mb-6">
                   <h2 className={`text-[10px] font-bold uppercase tracking-[0.18em] mb-3 ${dark ? "text-burnt" : "text-burnt"}`}>
