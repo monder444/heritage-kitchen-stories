@@ -16,10 +16,11 @@ function AdminCreate() {
   const { add } = useRecipes();
   const navigate = useNavigate();
 
-  const onCreate = (recipe: ReturnType<typeof buildRecipe>) => {
-    add(recipe);
+  const onCreate = async (recipe: ReturnType<typeof buildRecipe>) => {
+    const id = await add(recipe);
+    if (!id) return; // toast handled in store
     toast.success(`Recept „${recipe.title.sk}" pridaný do archívu`);
-    navigate({ to: "/viewer/$id", params: { id: recipe.id } });
+    navigate({ to: "/viewer/$id", params: { id } });
   };
 
   return (
