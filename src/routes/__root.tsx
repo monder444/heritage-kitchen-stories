@@ -14,6 +14,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { LangProvider } from "@/lib/i18n";
 import { ScrapbookProvider } from "@/lib/scrapbook";
 import { RecipeProvider } from "@/lib/recipe-store";
+import { AuthProvider } from "@/lib/use-auth";
 import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
