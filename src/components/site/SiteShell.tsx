@@ -1,11 +1,15 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { type ReactNode } from "react";
+import { toast } from "sonner";
 import { useLang } from "@/lib/i18n";
 import { useScrapbook } from "@/lib/scrapbook";
+import { useAuth } from "@/lib/use-auth";
 
 export function SiteShell({ children }: { children: ReactNode }) {
   const { lang, setLang, t } = useLang();
   const { saved } = useScrapbook();
+  const { user, isAdmin, isPremium, signOut } = useAuth();
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-background text-foreground font-sans selection:bg-accent/20">
