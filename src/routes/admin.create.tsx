@@ -1,12 +1,17 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { SiteShell } from "@/components/site/SiteShell";
+import { AdminGuard } from "@/components/site/AdminGuard";
 import { toast } from "sonner";
 import { useRecipes, generateFromUrl, generateFromImage, buildRecipe } from "@/lib/recipe-store";
 
 export const Route = createFileRoute("/admin/create")({
   head: () => ({ meta: [{ title: "Vytvoriť recept — Admin · Chuť Archívu" }] }),
-  component: AdminCreate,
+  component: () => (
+    <AdminGuard>
+      <AdminCreate />
+    </AdminGuard>
+  ),
 });
 
 type Tab = "url" | "image" | "manual";
