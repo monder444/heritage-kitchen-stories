@@ -69,7 +69,7 @@ function publicShape(r: Recipe): Recipe {
   };
 }
 
-/** Public list — returns every recipe with safe fields only; full body fetched per-recipe. */
+/** Public list — strips premium body for non-entitled viewers. */
 export const listRecipesFn = createServerFn({ method: "GET" }).handler(async () => {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data, error } = await supabaseAdmin
@@ -77,7 +77,11 @@ export const listRecipesFn = createServerFn({ method: "GET" }).handler(async () 
     .select("id,slug,title,image,scan,era,source,region,tag,premium,intro,original_lines,ingredients,method")
     .order("created_at", { ascending: false });
   if (error) throw new Error(error.message);
-  return (data as Row[]).map(rowToRecipe);
+  const entitled = await viewerIsEntitled();
+  return (data as Row[]).map((row) => {
+    const r = rowToRecipe(row);
+    return r.premium && !entitled ? publicShape(r) : r;
+  });
 });
 
 /** Returns a single recipe; strips body if premium and viewer lacks entitlement. */
