@@ -13,6 +13,7 @@ import { Route as ScrapbookRouteImport } from './routes/scrapbook'
 import { Route as DossiersRouteImport } from './routes/dossiers'
 import { Route as DiscoverRouteImport } from './routes/discover'
 import { Route as BookBuilderRouteImport } from './routes/book-builder'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ViewerIdRouteImport } from './routes/viewer.$id'
@@ -36,6 +37,11 @@ const DiscoverRoute = DiscoverRouteImport.update({
 const BookBuilderRoute = BookBuilderRouteImport.update({
   id: '/book-builder',
   path: '/book-builder',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRoute = AdminRouteImport.update({
@@ -62,6 +68,7 @@ const AdminCreateRoute = AdminCreateRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
+  '/auth': typeof AuthRoute
   '/book-builder': typeof BookBuilderRoute
   '/discover': typeof DiscoverRoute
   '/dossiers': typeof DossiersRoute
@@ -72,6 +79,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
+  '/auth': typeof AuthRoute
   '/book-builder': typeof BookBuilderRoute
   '/discover': typeof DiscoverRoute
   '/dossiers': typeof DossiersRoute
@@ -83,6 +91,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
+  '/auth': typeof AuthRoute
   '/book-builder': typeof BookBuilderRoute
   '/discover': typeof DiscoverRoute
   '/dossiers': typeof DossiersRoute
@@ -95,6 +104,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
+    | '/auth'
     | '/book-builder'
     | '/discover'
     | '/dossiers'
@@ -105,6 +115,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/admin'
+    | '/auth'
     | '/book-builder'
     | '/discover'
     | '/dossiers'
@@ -115,6 +126,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/admin'
+    | '/auth'
     | '/book-builder'
     | '/discover'
     | '/dossiers'
@@ -126,6 +138,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRouteWithChildren
+  AuthRoute: typeof AuthRoute
   BookBuilderRoute: typeof BookBuilderRoute
   DiscoverRoute: typeof DiscoverRoute
   DossiersRoute: typeof DossiersRoute
@@ -161,6 +174,13 @@ declare module '@tanstack/react-router' {
       path: '/book-builder'
       fullPath: '/book-builder'
       preLoaderRoute: typeof BookBuilderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin': {
@@ -207,6 +227,7 @@ const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRouteWithChildren,
+  AuthRoute: AuthRoute,
   BookBuilderRoute: BookBuilderRoute,
   DiscoverRoute: DiscoverRoute,
   DossiersRoute: DossiersRoute,
@@ -216,3 +237,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
