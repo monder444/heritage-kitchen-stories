@@ -227,16 +227,31 @@ function ViewerPage() {
               <div className="rounded-2xl border-2 border-dashed border-burgundy/30 bg-parchment p-8 text-center">
                 <p className="font-serif text-2xl text-burgundy mb-3 italic">Tento recept je prémiový</p>
                 <p className="text-sm text-muted-foreground mb-6 max-w-sm mx-auto">
-                  Pre prístup k modernizácii a postupu sa prihláste alebo si aktivujte mesačné členstvo.
+                  {user
+                    ? "Pre prístup k modernizácii a postupu si aktivujte mesačné členstvo."
+                    : "Pre prístup k modernizácii a postupu sa prihláste alebo si aktivujte mesačné členstvo."}
                 </p>
                 <button
-                  onClick={() => setUnlocked(true)}
-                  className="px-6 py-3 bg-burgundy text-cream rounded-full font-medium hover:bg-ink transition-colors"
+                  onClick={async () => {
+                    if (!user) { navigate({ to: "/auth" }); return; }
+                    setUnlocking(true);
+                    try {
+                      await grantPremium();
+                      await qc.invalidateQueries({ queryKey: ["auth"] });
+                      toast.success("Premium aktivované — vitajte v dossier klube");
+                    } catch (e: any) {
+                      toast.error(e?.message || "Aktivácia zlyhala");
+                    } finally {
+                      setUnlocking(false);
+                    }
+                  }}
+                  disabled={unlocking}
+                  className="px-6 py-3 bg-burgundy text-cream rounded-full font-medium hover:bg-ink transition-colors disabled:opacity-60"
                 >
-                  Odomknúť — 4,90 € / mesiac
+                  {unlocking ? "Aktivujem…" : user ? "Odomknúť — 4,90 € / mesiac (demo)" : "Prihlásiť sa a odomknúť"}
                 </button>
                 <p className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground mt-4">
-                  Zrušiť môžete kedykoľvek
+                  Demo: platba sa zatiaľ neprijíma · zrušiť môžete kedykoľvek
                 </p>
               </div>
             )}
