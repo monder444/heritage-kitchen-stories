@@ -28,6 +28,7 @@ function ViewerPage() {
   const entitled = !recipe?.premium || isAdmin || isPremium;
   const [unlocking, setUnlocking] = useState(false);
   const [dark, setDark] = useState(true);
+  const [activeIdx, setActiveIdx] = useState<number | null>(null);
   const [modernizing, setModernizing] = useState(false);
   const [version, setVersion] = useState(2);
 
