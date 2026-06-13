@@ -6,7 +6,6 @@ import { AdminGuard } from "@/components/site/AdminGuard";
 import { AdminSubNav } from "@/components/site/AdminSubNav";
 import { useRecipes } from "@/lib/recipe-store";
 import { listPromptsFn } from "@/lib/prompts.functions";
-import { useServerFn as _u } from "@tanstack/react-start";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({ meta: [{ title: "Admin — Chuť Archívu" }] }),
