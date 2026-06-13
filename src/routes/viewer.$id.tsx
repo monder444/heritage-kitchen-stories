@@ -187,12 +187,19 @@ function ViewerPage() {
                 <section className="mb-6">
                   <h2 className={`text-[10px] font-bold uppercase tracking-[0.18em] mb-3 ${dark ? "text-burnt" : "text-burnt"}`}>
                     {t("home.viewer.ingredients")}
+                    <span className="ml-2 normal-case font-normal text-cream/40 text-[10px]">{lang === "sk" ? "(klik = zvýrazni v postupe)" : "(click = highlight in method)"}</span>
                   </h2>
                   <ul className="space-y-2 text-sm">
                     {recipe.ingredients[lang].map((i: string, idx: number) => (
-                      <li key={i} className="flex gap-3">
-                        <span className="font-mono text-burnt text-xs pt-0.5">0{idx + 1}</span>
-                        <span>{i}</span>
+                      <li key={i}>
+                        <button
+                          type="button"
+                          onClick={() => setActiveIdx(activeIdx === idx ? null : idx)}
+                          className={`flex gap-3 text-left w-full px-2 py-1 -mx-2 rounded transition-colors ${activeIdx === idx ? (dark ? "bg-burnt/20 ring-1 ring-burnt" : "bg-burnt/10 ring-1 ring-burnt") : "hover:bg-current/5"}`}
+                        >
+                          <span className="font-mono text-burnt text-xs pt-0.5">0{idx + 1}</span>
+                          <span>{i}</span>
+                        </button>
                       </li>
                     ))}
                   </ul>
@@ -202,12 +209,17 @@ function ViewerPage() {
                     {t("home.viewer.method")}
                   </h2>
                   <ol className="space-y-3 text-sm leading-relaxed">
-                    {recipe.method[lang].map((m: string, idx: number) => (
-                      <li key={m} className="flex gap-3">
-                        <span className={`font-serif italic text-lg leading-none ${dark ? "text-burnt" : "text-burgundy"}`}>{idx + 1}.</span>
-                        <span>{m}</span>
-                      </li>
-                    ))}
+                    {recipe.method[lang].map((m: string, idx: number) => {
+                      const activeIng = activeIdx !== null ? recipe.ingredients[lang][activeIdx] : null;
+                      const firstWord = activeIng ? activeIng.split(/[\s,()]+/).find((w) => w.length > 3)?.toLowerCase() : null;
+                      const isMatch = firstWord ? m.toLowerCase().includes(firstWord) : false;
+                      return (
+                        <li key={m} className={`flex gap-3 px-2 py-1 -mx-2 rounded transition-colors ${isMatch ? (dark ? "bg-burnt/20 ring-1 ring-burnt" : "bg-burnt/10 ring-1 ring-burnt") : ""}`}>
+                          <span className={`font-serif italic text-lg leading-none ${dark ? "text-burnt" : "text-burgundy"}`}>{idx + 1}.</span>
+                          <span>{m}</span>
+                        </li>
+                      );
+                    })}
                   </ol>
                 </section>
                 <button
