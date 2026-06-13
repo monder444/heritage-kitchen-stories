@@ -273,14 +273,42 @@ function ViewerPage() {
 
         {/* Citation footer */}
         <aside className="mt-10 bg-ink text-cream rounded-3xl p-8 md:p-10">
-          <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-burnt mb-3">Záväzok autenticity</p>
+          <div className="flex items-center gap-3 mb-3 flex-wrap">
+            <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-burnt">Záväzok autenticity</span>
+            <span className="text-[10px] font-bold uppercase tracking-[0.18em] bg-burnt/20 text-cream px-3 py-1 rounded-full">100% facsimile</span>
+          </div>
           <p className="font-serif text-2xl italic max-w-3xl leading-snug">
             „Negenerujeme syntetické recepty. Každý výstup je viazaný na konkrétnu archívnu stranu a jej skenovaný originál.“
           </p>
-          <p className="mt-6 text-xs text-cream/60 font-mono uppercase tracking-[0.18em]">
-            {t("common.source")}: {recipe.source[lang]}
-          </p>
+          <dl className="mt-6 grid sm:grid-cols-2 gap-x-8 gap-y-3 text-xs text-cream/70 font-mono uppercase tracking-[0.14em] max-w-2xl">
+            <div><dt className="opacity-60">Prameň</dt><dd className="text-cream mt-1 normal-case font-sans tracking-normal text-sm">{recipe.source[lang]}</dd></div>
+            {recipe.sourceYear && <div><dt className="opacity-60">Rok</dt><dd className="text-cream mt-1 normal-case font-sans tracking-normal text-sm">{recipe.sourceYear}</dd></div>}
+            {recipe.sourceAuthor && <div><dt className="opacity-60">Autor</dt><dd className="text-cream mt-1 normal-case font-sans tracking-normal text-sm">{recipe.sourceAuthor}</dd></div>}
+            {recipe.sourceUrl && (
+              <div><dt className="opacity-60">URL</dt><dd className="text-cream mt-1 normal-case font-sans tracking-normal text-sm break-all"><a href={recipe.sourceUrl} target="_blank" rel="noreferrer" className="underline hover:text-burnt">{recipe.sourceUrl}</a></dd></div>
+            )}
+          </dl>
         </aside>
+
+        {/* JSON-LD Recipe schema for SEO */}
+        {entitled && (
+          <script
+            type="application/ld+json"
+            // eslint-disable-next-line react/no-danger
+            dangerouslySetInnerHTML={{ __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Recipe",
+              name: recipe.title[lang],
+              image: [recipe.image],
+              description: recipe.intro[lang],
+              recipeCategory: recipe.category ?? recipe.tag[lang],
+              recipeCuisine: "Slovak historical",
+              recipeIngredient: recipe.ingredients[lang],
+              recipeInstructions: recipe.method[lang].map((step) => ({ "@type": "HowToStep", text: step })),
+              citation: { "@type": "CreativeWork", name: recipe.source[lang], datePublished: recipe.sourceYear, url: recipe.sourceUrl ?? undefined, author: recipe.sourceAuthor ?? undefined },
+            }) }}
+          />
+        )}
       </article>
     </SiteShell>
   );
