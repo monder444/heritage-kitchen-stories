@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SearchRouteImport } from './routes/search'
 import { Route as ScrapbookRouteImport } from './routes/scrapbook'
 import { Route as DossiersRouteImport } from './routes/dossiers'
 import { Route as DiscoverRouteImport } from './routes/discover'
@@ -17,8 +18,19 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ViewerIdRouteImport } from './routes/viewer.$id'
+import { Route as ExplorePromptSlugRouteImport } from './routes/explore.$promptSlug'
+import { Route as AdminPromptsRouteImport } from './routes/admin.prompts'
 import { Route as AdminCreateRouteImport } from './routes/admin.create'
+import { Route as ExplorePromptSlugRecipeIdRouteImport } from './routes/explore.$promptSlug.$recipeId'
+import { Route as AdminPromptsNewRouteImport } from './routes/admin.prompts.new'
+import { Route as AdminRecipesIdEditRouteImport } from './routes/admin.recipes.$id.edit'
+import { Route as AdminPromptsIdEditRouteImport } from './routes/admin.prompts.$id.edit'
 
+const SearchRoute = SearchRouteImport.update({
+  id: '/search',
+  path: '/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ScrapbookRoute = ScrapbookRouteImport.update({
   id: '/scrapbook',
   path: '/scrapbook',
@@ -59,10 +71,41 @@ const ViewerIdRoute = ViewerIdRouteImport.update({
   path: '/viewer/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ExplorePromptSlugRoute = ExplorePromptSlugRouteImport.update({
+  id: '/explore/$promptSlug',
+  path: '/explore/$promptSlug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminPromptsRoute = AdminPromptsRouteImport.update({
+  id: '/prompts',
+  path: '/prompts',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminCreateRoute = AdminCreateRouteImport.update({
   id: '/create',
   path: '/create',
   getParentRoute: () => AdminRoute,
+} as any)
+const ExplorePromptSlugRecipeIdRoute =
+  ExplorePromptSlugRecipeIdRouteImport.update({
+    id: '/$recipeId',
+    path: '/$recipeId',
+    getParentRoute: () => ExplorePromptSlugRoute,
+  } as any)
+const AdminPromptsNewRoute = AdminPromptsNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => AdminPromptsRoute,
+} as any)
+const AdminRecipesIdEditRoute = AdminRecipesIdEditRouteImport.update({
+  id: '/recipes/$id/edit',
+  path: '/recipes/$id/edit',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminPromptsIdEditRoute = AdminPromptsIdEditRouteImport.update({
+  id: '/$id/edit',
+  path: '/$id/edit',
+  getParentRoute: () => AdminPromptsRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -73,8 +116,15 @@ export interface FileRoutesByFullPath {
   '/discover': typeof DiscoverRoute
   '/dossiers': typeof DossiersRoute
   '/scrapbook': typeof ScrapbookRoute
+  '/search': typeof SearchRoute
   '/admin/create': typeof AdminCreateRoute
+  '/admin/prompts': typeof AdminPromptsRouteWithChildren
+  '/explore/$promptSlug': typeof ExplorePromptSlugRouteWithChildren
   '/viewer/$id': typeof ViewerIdRoute
+  '/admin/prompts/new': typeof AdminPromptsNewRoute
+  '/explore/$promptSlug/$recipeId': typeof ExplorePromptSlugRecipeIdRoute
+  '/admin/prompts/$id/edit': typeof AdminPromptsIdEditRoute
+  '/admin/recipes/$id/edit': typeof AdminRecipesIdEditRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -84,8 +134,15 @@ export interface FileRoutesByTo {
   '/discover': typeof DiscoverRoute
   '/dossiers': typeof DossiersRoute
   '/scrapbook': typeof ScrapbookRoute
+  '/search': typeof SearchRoute
   '/admin/create': typeof AdminCreateRoute
+  '/admin/prompts': typeof AdminPromptsRouteWithChildren
+  '/explore/$promptSlug': typeof ExplorePromptSlugRouteWithChildren
   '/viewer/$id': typeof ViewerIdRoute
+  '/admin/prompts/new': typeof AdminPromptsNewRoute
+  '/explore/$promptSlug/$recipeId': typeof ExplorePromptSlugRecipeIdRoute
+  '/admin/prompts/$id/edit': typeof AdminPromptsIdEditRoute
+  '/admin/recipes/$id/edit': typeof AdminRecipesIdEditRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -96,8 +153,15 @@ export interface FileRoutesById {
   '/discover': typeof DiscoverRoute
   '/dossiers': typeof DossiersRoute
   '/scrapbook': typeof ScrapbookRoute
+  '/search': typeof SearchRoute
   '/admin/create': typeof AdminCreateRoute
+  '/admin/prompts': typeof AdminPromptsRouteWithChildren
+  '/explore/$promptSlug': typeof ExplorePromptSlugRouteWithChildren
   '/viewer/$id': typeof ViewerIdRoute
+  '/admin/prompts/new': typeof AdminPromptsNewRoute
+  '/explore/$promptSlug/$recipeId': typeof ExplorePromptSlugRecipeIdRoute
+  '/admin/prompts/$id/edit': typeof AdminPromptsIdEditRoute
+  '/admin/recipes/$id/edit': typeof AdminRecipesIdEditRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -109,8 +173,15 @@ export interface FileRouteTypes {
     | '/discover'
     | '/dossiers'
     | '/scrapbook'
+    | '/search'
     | '/admin/create'
+    | '/admin/prompts'
+    | '/explore/$promptSlug'
     | '/viewer/$id'
+    | '/admin/prompts/new'
+    | '/explore/$promptSlug/$recipeId'
+    | '/admin/prompts/$id/edit'
+    | '/admin/recipes/$id/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -120,8 +191,15 @@ export interface FileRouteTypes {
     | '/discover'
     | '/dossiers'
     | '/scrapbook'
+    | '/search'
     | '/admin/create'
+    | '/admin/prompts'
+    | '/explore/$promptSlug'
     | '/viewer/$id'
+    | '/admin/prompts/new'
+    | '/explore/$promptSlug/$recipeId'
+    | '/admin/prompts/$id/edit'
+    | '/admin/recipes/$id/edit'
   id:
     | '__root__'
     | '/'
@@ -131,8 +209,15 @@ export interface FileRouteTypes {
     | '/discover'
     | '/dossiers'
     | '/scrapbook'
+    | '/search'
     | '/admin/create'
+    | '/admin/prompts'
+    | '/explore/$promptSlug'
     | '/viewer/$id'
+    | '/admin/prompts/new'
+    | '/explore/$promptSlug/$recipeId'
+    | '/admin/prompts/$id/edit'
+    | '/admin/recipes/$id/edit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -143,11 +228,20 @@ export interface RootRouteChildren {
   DiscoverRoute: typeof DiscoverRoute
   DossiersRoute: typeof DossiersRoute
   ScrapbookRoute: typeof ScrapbookRoute
+  SearchRoute: typeof SearchRoute
+  ExplorePromptSlugRoute: typeof ExplorePromptSlugRouteWithChildren
   ViewerIdRoute: typeof ViewerIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/scrapbook': {
       id: '/scrapbook'
       path: '/scrapbook'
@@ -204,6 +298,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ViewerIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/explore/$promptSlug': {
+      id: '/explore/$promptSlug'
+      path: '/explore/$promptSlug'
+      fullPath: '/explore/$promptSlug'
+      preLoaderRoute: typeof ExplorePromptSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/prompts': {
+      id: '/admin/prompts'
+      path: '/prompts'
+      fullPath: '/admin/prompts'
+      preLoaderRoute: typeof AdminPromptsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/create': {
       id: '/admin/create'
       path: '/create'
@@ -211,18 +319,75 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCreateRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/explore/$promptSlug/$recipeId': {
+      id: '/explore/$promptSlug/$recipeId'
+      path: '/$recipeId'
+      fullPath: '/explore/$promptSlug/$recipeId'
+      preLoaderRoute: typeof ExplorePromptSlugRecipeIdRouteImport
+      parentRoute: typeof ExplorePromptSlugRoute
+    }
+    '/admin/prompts/new': {
+      id: '/admin/prompts/new'
+      path: '/new'
+      fullPath: '/admin/prompts/new'
+      preLoaderRoute: typeof AdminPromptsNewRouteImport
+      parentRoute: typeof AdminPromptsRoute
+    }
+    '/admin/recipes/$id/edit': {
+      id: '/admin/recipes/$id/edit'
+      path: '/recipes/$id/edit'
+      fullPath: '/admin/recipes/$id/edit'
+      preLoaderRoute: typeof AdminRecipesIdEditRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/prompts/$id/edit': {
+      id: '/admin/prompts/$id/edit'
+      path: '/$id/edit'
+      fullPath: '/admin/prompts/$id/edit'
+      preLoaderRoute: typeof AdminPromptsIdEditRouteImport
+      parentRoute: typeof AdminPromptsRoute
+    }
   }
 }
 
+interface AdminPromptsRouteChildren {
+  AdminPromptsNewRoute: typeof AdminPromptsNewRoute
+  AdminPromptsIdEditRoute: typeof AdminPromptsIdEditRoute
+}
+
+const AdminPromptsRouteChildren: AdminPromptsRouteChildren = {
+  AdminPromptsNewRoute: AdminPromptsNewRoute,
+  AdminPromptsIdEditRoute: AdminPromptsIdEditRoute,
+}
+
+const AdminPromptsRouteWithChildren = AdminPromptsRoute._addFileChildren(
+  AdminPromptsRouteChildren,
+)
+
 interface AdminRouteChildren {
   AdminCreateRoute: typeof AdminCreateRoute
+  AdminPromptsRoute: typeof AdminPromptsRouteWithChildren
+  AdminRecipesIdEditRoute: typeof AdminRecipesIdEditRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminCreateRoute: AdminCreateRoute,
+  AdminPromptsRoute: AdminPromptsRouteWithChildren,
+  AdminRecipesIdEditRoute: AdminRecipesIdEditRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
+interface ExplorePromptSlugRouteChildren {
+  ExplorePromptSlugRecipeIdRoute: typeof ExplorePromptSlugRecipeIdRoute
+}
+
+const ExplorePromptSlugRouteChildren: ExplorePromptSlugRouteChildren = {
+  ExplorePromptSlugRecipeIdRoute: ExplorePromptSlugRecipeIdRoute,
+}
+
+const ExplorePromptSlugRouteWithChildren =
+  ExplorePromptSlugRoute._addFileChildren(ExplorePromptSlugRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -232,18 +397,10 @@ const rootRouteChildren: RootRouteChildren = {
   DiscoverRoute: DiscoverRoute,
   DossiersRoute: DossiersRoute,
   ScrapbookRoute: ScrapbookRoute,
+  SearchRoute: SearchRoute,
+  ExplorePromptSlugRoute: ExplorePromptSlugRouteWithChildren,
   ViewerIdRoute: ViewerIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

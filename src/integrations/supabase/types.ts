@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      magic_prompts: {
+        Row: {
+          category: string | null
+          created_at: string
+          description: Json
+          display_order: number
+          icon: string
+          id: string
+          slug: string
+          title: Json
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          description?: Json
+          display_order?: number
+          icon?: string
+          id?: string
+          slug: string
+          title: Json
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          description?: Json
+          display_order?: number
+          icon?: string
+          id?: string
+          slug?: string
+          title?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -40,6 +76,7 @@ export type Database = {
       }
       recipes: {
         Row: {
+          category: string | null
           created_at: string
           created_by: string | null
           era: string | null
@@ -50,15 +87,20 @@ export type Database = {
           method: Json | null
           original_lines: Json | null
           premium: boolean
+          prompt_ids: string[]
           region: Json | null
           scan: string | null
           slug: string
           source: Json | null
+          source_author: string | null
+          source_url: string | null
+          source_year: number | null
           tag: Json | null
           title: Json
           updated_at: string
         }
         Insert: {
+          category?: string | null
           created_at?: string
           created_by?: string | null
           era?: string | null
@@ -69,15 +111,20 @@ export type Database = {
           method?: Json | null
           original_lines?: Json | null
           premium?: boolean
+          prompt_ids?: string[]
           region?: Json | null
           scan?: string | null
           slug: string
           source?: Json | null
+          source_author?: string | null
+          source_url?: string | null
+          source_year?: number | null
           tag?: Json | null
           title: Json
           updated_at?: string
         }
         Update: {
+          category?: string | null
           created_at?: string
           created_by?: string | null
           era?: string | null
@@ -88,10 +135,14 @@ export type Database = {
           method?: Json | null
           original_lines?: Json | null
           premium?: boolean
+          prompt_ids?: string[]
           region?: Json | null
           scan?: string | null
           slug?: string
           source?: Json | null
+          source_author?: string | null
+          source_url?: string | null
+          source_year?: number | null
           tag?: Json | null
           title?: Json
           updated_at?: string

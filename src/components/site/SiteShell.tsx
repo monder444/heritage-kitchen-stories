@@ -20,6 +20,9 @@ export function SiteShell({ children }: { children: ReactNode }) {
               Chuť Archívu
             </Link>
             <div className="hidden md:flex gap-6 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+              <Link to="/search" className="hover:text-burnt transition-colors" activeProps={{ className: "text-burnt" }}>
+                {lang === "sk" ? "Hľadať" : "Search"}
+              </Link>
               <Link to="/discover" className="hover:text-burnt transition-colors" activeProps={{ className: "text-burnt" }}>
                 {t("nav.discover")}
               </Link>
